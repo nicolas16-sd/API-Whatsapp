@@ -15,18 +15,23 @@ const MESSAGE_ERRO = {status: false, status_code: 500, development: 'Nicolas dos
 const getAllDadosUsuario = function(){
     let message = {status: true, status_code: 200, development: 'Nicolas dos Santos', users: []}
 
-    const users = contatos.contatos['whats-users'].forEach(function (user){
-        message.user.push(user)
+    contatos.contatos['whats-users'].forEach(user => {
 
-        //Ordenando o usuário em ordem alfabética
-        message.user.sort()
+        //Puxando todos os dados de "User" de forma manual 
+        message.users.push({
+            id: user.id,
+            conta: user.account,
+            apelido: user.nickname,
+            comeco: user['created-since'],
+            foto_perfil: user['profile-image'],
+            numero: user.number,
+            background: user.background,
+            contatos: user.contacts.map(user => user.name)
+        })
     })
 
-    if(users){
-        return message
-    } else {
-        return MESSAGE_ERRO
-    }
+    //Retornos em forEach precisam estar fora do Loop (Erro de Undefined)
+    return message
 
     }
 
@@ -42,7 +47,7 @@ const getAllDadosByNumero = function(number){
         message.conta = user.account
         message.apelido = user.nickname
         message.comeco = user['created-since']
-        message.foto_perfil - user['profile-image']
+        message.foto_perfil = user['profile-image']
         message.numero = user.number
         message.background = user.background
         return message
@@ -77,8 +82,7 @@ const getMensagemByNumero = function(number){
 
     if(user){
         message.conta = user.account
-        message.contatos = user.contacts.map(user => user.name)
-        message.mensagens = user.contacts.map(user => user.messages)
+        message.contatos = user.contacts
         return message
     } else {
         return MESSAGE_ERRO
@@ -86,16 +90,68 @@ const getMensagemByNumero = function(number){
 }
 
 //Listar todas as mensagens trocadas de um usuário pelo número (Usuário com outro Usuário)
-const getMensagensTrocadasByNumero = function(number){
+const getMensagensTrocadasByNumero = function(userNumber, contactNumber){
     let message = {status: true, status_code: 200, development: 'Nicolas dos Santos'}
+    
+    const user = contatos.contatos['whats-users'].find(user => user.number === userNumber)
+
+    //Se o usuário requerido for correto...
+    if(user){
+        //Busca o usuário
+        const contact = user.contacts.find(contact => contact.number === contactNumber)
+
+        //Se o find() encontrar o contato pedido
+        if(contact){
+            //Criação de uma nova estrutura para retorno no terminal
+            message.conversa = {
+                usuario: user.account,
+                usuario_numero: user.number,
+                contato: contact.name,
+                contato_numero: contact.number,
+                mensagens: contact.messages
+            }
+            return message
+        } else {
+            return MESSAGE_ERRO
+        }
+    }
 }
 
-console.log(getMensagemByNumero("11987876567"))
+const getPalavraChave = function(userNumber, contactNumber, palavraChave) {
+    let message = {
+        status: true,
+        status_code: 200,
+        development: 'Nicolas dos Santos',
+        resultados: []
+    }
+
+    // Percorrendo os usuários
+    contatos.contatos['whats-users'].forEach(user => {
+        if (user.number === userNumber) {
+            user.contacts.forEach(contact => {
+                if (contact.number === contactNumber) {
+                    contact.messages.forEach(messages => {
+                        if (messages.content.includes(palavraChave)) {
+                            message.resultados.push(messages.content)
+                        }
+                    })
+                }
+            })
+        }
+    })
+
+    // Retorno
+    return message
+}
+
+
+console.log(getPalavraChave('11987876567', '26999999963', 'Hello'))
 
 module.exports = {
     getAllDadosUsuario,
     getAllDadosByNumero,
     getContatosByNumero,
     getMensagemByNumero,
-    getMensagensTrocadasByNumero
+    getMensagensTrocadasByNumero,
+    getPalavraChave
 }
