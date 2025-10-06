@@ -21,3 +21,19 @@ app.use((request, response, next) => {
     next()
 }) 
 
+//getAllDadosUsuario
+app.get('/v1/usuarios', function(request, response){
+    let users = contatos.getAllDadosUsuario()
+
+    response.status(users.status_code)
+    response.json(users)
+})
+
+//getAllDadosByNumero
+app.get('v1/:number', function(request, response){
+    let number = request.params.number
+    let dados = contatos.getAllDadosByNumero(number)
+
+    response.status(dados.status_code)
+    response.json(dados)
+})
