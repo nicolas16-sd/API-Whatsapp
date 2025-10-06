@@ -88,3 +88,4 @@ app.get('/v1/whatsapp/pesquisa/:userNumber/:contactNumber/:palavra', (request, r
 app.listen(PORT, function(){
     console.log('API aguardando requisições')
 })
+
