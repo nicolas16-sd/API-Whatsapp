@@ -144,9 +144,6 @@ const getPalavraChave = function(userNumber, contactNumber, palavraChave) {
     return message
 }
 
-
-console.log(getPalavraChave('11987876567', '26999999963', 'Hello'))
-
 module.exports = {
     getAllDadosUsuario,
     getAllDadosByNumero,
